@@ -1,0 +1,173 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[fontset=fandol]{ctex}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[margin=2.35cm]{geometry}
+\usepackage[most]{tcolorbox}
+\usepackage{etoolbox}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{tikz}
+\IfFileExists{pgfplots.sty}{
+  \usepackage{pgfplots}
+  \pgfplotsset{compat=1.18}
+}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\captionsetup{font=small,labelfont=bf}
+
+\newtcolorbox{knowledgebox}[1]{
+  enhanced,
+  colback=blue!5!white,
+  colframe=blue!70!black,
+  colbacktitle=blue!70!black,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title=#1,
+  sharp corners
+}
+
+\newtcolorbox{importantbox}[1]{
+  enhanced,
+  colback=yellow!10!white,
+  colframe=yellow!80!black,
+  colbacktitle=yellow!80!black,
+  coltitle=black,
+  fonttitle=\bfseries,
+  title=#1,
+  sharp corners
+}
+
+\newtcolorbox{warningbox}[1]{
+  enhanced,
+  colback=red!5!white,
+  colframe=red!70!black,
+  colbacktitle=red!70!black,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title=#1,
+  sharp corners
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  captionpos=b,
+  extendedchars=false
+}
+
+% Fill these metadata fields during generation.
+\newcommand{\notetitle}{课程讲义}
+\newcommand{\notesubtitle}{}
+\newcommand{\noteauthors}{Codex}
+\newcommand{\notedate}{\today}
+\newcommand{\videochannel}{}
+\newcommand{\videopublishdate}{}
+\newcommand{\videoduration}{}
+\newcommand{\videourl}{}
+\newcommand{\videocoverpath}{}
+\newcommand{\inputmode}{}
+\newcommand{\processingnote}{}
+
+\newcommand{\sourceframefig}[4]{%
+\begin{figure}[H]
+\centering
+\includegraphics[width=#4\textwidth]{#1}
+\caption{#2\protect\footnotemark}
+\end{figure}
+\footnotetext{视频画面时间区间：#3。若为裁剪图，时间区间仍对应原始视频画面。}
+}
+
+\newcommand{\teachingdiagram}[4]{%
+\begin{figure}[H]
+\centering
+\includegraphics[width=#4\textwidth]{#1}
+\caption{#2。教学图来源依据：#3。此图为重写生成的示意图，不是原始视频截图。}
+\end{figure}
+}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+{\Large 课程讲义\par}
+\vspace{1.0cm}
+{\huge\bfseries \notetitle\par}
+\ifdefempty{\notesubtitle}{}{\vspace{0.35cm}{\Large \notesubtitle\par}}
+\vspace{0.65cm}
+{\large \noteauthors\par}
+\vspace{0.25cm}
+{\large \notedate\par}
+\vspace{0.9cm}
+
+\ifdefempty{\videocoverpath}{
+  {\small 未提供可用封面图。生成最终版前应补充平台封面或本地预览帧。\par}
+}{
+  \includegraphics[width=0.86\textwidth,height=0.43\textheight,keepaspectratio]{\videocoverpath}\par
+}
+
+\vfill
+\begin{tcolorbox}[width=0.9\textwidth,colback=black!2!white,colframe=black!60,sharp corners]
+\textbf{视频作者/频道：}\videochannel\par
+\textbf{发布日期：}\videopublishdate\par
+\textbf{视频时长：}\videoduration\par
+\textbf{视频链接：}
+\ifdefempty{\videourl}{未填写}{\href{\videourl}{\nolinkurl{\videourl}}}\par
+\textbf{输入模式：}\inputmode\par
+\textbf{处理说明：}\processingnote
+\end{tcolorbox}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%% Replace this block with generated Chinese teaching notes.
+%%
+%% Required body structure:
+%% - for trading videos, default to a zero-foundation textbook, not a compressed summary
+%% - include or reference source_coverage_report before finalizing
+%% - follow writing_plan.json instead of dumping subtitle lines
+%% - each major section should explain motivation, problem/context, core idea,
+%%   mechanism, evidence/example, support boundary, and learner takeaway when applicable
+%% - substantial chapters should include learning goals, prerequisites, source scene,
+%%   timestamped source evidence, novice explanation, mechanism breakdown,
+%%   common misconceptions, risk boundary, chapter summary, and review answers
+%% - define specialist terms before relying on them
+%% - define each first-use trading term with plain language, source scene,
+%%   professional meaning, common misunderstanding, and misuse boundary
+%% - explain intuition before formulas, code, or trading jargon
+%% - use full trade-case replay for concrete trades, cancelled plans, stop moves,
+%%   partial exits, exits, and no-trade decisions
+%% - include selected source frames with \sourceframefig
+%% - include crops with \sourceframefig
+%% - include AI-generated teaching diagrams with \teachingdiagram
+%% - introduce every figure before insertion and interpret its evidence boundary after insertion when needed
+%% - keep images outside boxes
+%% - use importantbox/knowledgebox/warningbox only for high-signal teaching payloads
+%% - end each major section with \subsection{本章小结}
+%% - end the document with a final synthesis section covering core claims,
+%%   cross-section links, practical implications, limits, and open questions when supported
+%%
+%% Example:
+%% \section{示例章节}
+%% 正文说明。
+%% \begin{importantbox}{核心概念}
+%% 重要解释。
+%% \end{importantbox}
+%% \sourceframefig{figures/fig001.jpg}{截图说明}{00:01:20--00:01:28}{0.9}
+%% \teachingdiagram{diagrams/diagram001.svg}{教学图说明}{KP001，00:01:20--00:01:28}{0.78}
+%% \subsection{本章小结}
+%% 小结。
+
+\end{document}
