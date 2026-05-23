@@ -8,8 +8,21 @@ Use a run-specific output directory:
 
 ```text
 output/
+  acquisition_manifest.json
+  url_list_normalized.txt
   source/
+    source_video.mp4
+    source_subtitle.srt
+    source_transcript.txt
+    source_metadata.json
+    cover.jpg
   srt/
+  items/
+    item_001/
+      metadata_probe.json
+      raw/
+      source/
+      srt/
   candidate_frames/
   contact_sheets/
   figures/
@@ -58,6 +71,7 @@ Do not move to the next phase until the required artifact exists.
 
 | Phase | Required artifact | Gate |
 |---|---|---|
+| source acquisition | `acquisition_manifest.json`, `source/` and `srt/` when URL input is used | URL inputs are deduplicated, selected video/subtitle/metadata are normalized, or `needs_asr`/visual-only is explicitly recorded |
 | transcript understanding | `knowledge_points.json` | every major teaching point has a timestamp and explanation |
 | visual planning | `keyframe_segments.json` | every segment starts from a knowledge point and visual question |
 | dense extraction | `candidate_frames/`, `contact_sheets/` | each visual question has a dense candidate set |
@@ -82,7 +96,9 @@ Record enough information to audit the run:
 ```json
 {
   "workflow": "bilibili-render-pdf-knowledge-visual-v2",
-  "input_mode": "bilibili_url | local_video | local_video_plus_transcript",
+  "input_mode": "bilibili_url | youtube_url | url_file | local_video | local_video_plus_transcript",
+  "source_acquisition_manifest": "",
+  "source_acquisition_status": "ready | metadata_only | needs_asr | visual_only | skipped_for_local_input",
   "video_file": "",
   "transcript_file": "",
   "segment": "00:00:00--00:20:00",

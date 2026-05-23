@@ -1,11 +1,11 @@
 ---
 name: bilibili-render-pdf
-description: Generate a professional Chinese teaching-note PDF from a Bilibili video, local video, or video plus timestamped transcript. Use when the user wants a Codex-native learning workflow that uses Codex for transcript understanding, finance knowledge extraction, visual question design, keyframe interpretation, AI teaching-visual design, source coverage audit, and zero-foundation textbook writing, while using tools only for mechanical media/file/PDF operations. Supports Bilibili metadata/download when available and local-video adaptation when the user provides local files.
+description: Generate a professional Chinese teaching-note PDF from a Bilibili/YouTube URL, URL list, local video, or video plus timestamped transcript. Use when the user wants a Codex-native learning workflow that uses Codex for transcript understanding, finance knowledge extraction, visual question design, keyframe interpretation, AI teaching-visual design, source coverage audit, and zero-foundation textbook writing, while using tools only for mechanical media/file/PDF operations. Supports video/subtitle acquisition from Bilibili or YouTube, including Bilibili multi-part URLs and local-video adaptation.
 ---
 
 # Bilibili Render PDF
 
-Use this skill to turn a Bilibili video or local video/transcript pair into a Chinese teaching-note package and a compiled PDF.
+Use this skill to turn a Bilibili/YouTube URL, URL list, or local video/transcript pair into a Chinese teaching-note package and a compiled PDF.
 
 This is a Codex-native skill. Codex must lead the intellectual work: transcript understanding, semantic chaptering, knowledge extraction, visual interpretation, teaching-visual design, and final Chinese writing. Scripts and external tools are mechanical helpers only: frame extraction, crop application, contact sheets, compositing, LaTeX compilation, and cleanup.
 
@@ -32,6 +32,7 @@ This skill is not a simple summarizer. It must behave like a learning workflow:
 Read only the references needed for the current run:
 
 - For default ownership between Codex and mechanical tools, read `references/codex-native-workflow.md`.
+- For Bilibili/YouTube URL download, subtitle acquisition, URL-file deduplication, and source hand-off rules, read `references/source-acquisition.md`.
 - For artifact names, schemas, and phase gates, read `references/workflow-artifacts.md`.
 - For detailed knowledge extraction and finance/technical term explanation rules, read `references/knowledge-points.md`.
 - For keyframe selection, frame interpretation, evidence fusion, and cleanup rules, read `references/visual-analysis.md`.
@@ -45,12 +46,13 @@ Read only the references needed for the current run:
 
 Accept either:
 
-- a Bilibili URL or BV number
+- a Bilibili URL, BV number, b23 short link, or YouTube URL
+- a local text file containing one or more video URLs
 - a local video file
 - a local timestamped transcript/SRT file
 - a local video plus timestamped transcript
 
-For Bilibili URLs, inspect metadata first: title, parts, duration, thumbnail, subtitles, and available formats. If the video is multi-part, ask which part to process unless the user already specified it.
+For Bilibili/YouTube URL inputs, run source acquisition before transcript understanding. For Bilibili URLs, inspect metadata first: title, parts, duration, thumbnail, subtitles, and available formats. If the video is multi-part and the URL contains `p=N`, process that exact part. If it is multi-part and the user did not specify a part, ask which part to process unless the user requested batch processing.
 
 For local video inputs, record the local adaptation explicitly in `run_manifest.json`. If no platform cover is available, use a representative preview frame and state that limitation.
 
@@ -67,6 +69,24 @@ Missing `OPENAI_API_KEY` is not a failure in Codex-native mode. It only means op
 
 ## Source Acquisition
 
+When the user provides a video URL or a URL text file, use `scripts/acquire_video_source.py` to download or probe video, subtitles, cover, and metadata into the standard workflow layout. Read `references/source-acquisition.md` first.
+
+Examples:
+
+```powershell
+python C:\Users\david\.codex\skills\bilibili-render-pdf\scripts\acquire_video_source.py `
+  C:\path\to\视频地址.txt `
+  --output-dir C:\path\to\output `
+  --dry-run
+```
+
+```powershell
+python C:\Users\david\.codex\skills\bilibili-render-pdf\scripts\acquire_video_source.py `
+  "https://www.bilibili.com/video/BVxxxx?p=2" `
+  --output-dir C:\path\to\output `
+  --cookies-from-browser chrome
+```
+
 Prefer this subtitle order:
 
 1. platform manual subtitles
@@ -81,6 +101,20 @@ Download or locate the highest usable video source for frame extraction. For Bil
 Do not use danmaku as teaching content.
 
 ## Mandatory Workflow
+
+### Phase 0: Acquire And Normalize Source
+
+When the input is a URL, URL list, or BV/link rather than an already prepared local video/transcript pair:
+
+- parse and deduplicate URLs by video identity and part
+- preserve Bilibili `p=N` part selection
+- download or probe metadata, cover, highest usable video, and platform subtitles
+- convert selected subtitles to timestamped SRT and a readable timestamped transcript view
+- write `acquisition_manifest.json`
+- mirror a single ready item to `source/` and `srt/`
+- stop for ASR/transcript repair if platform subtitles are missing
+
+Do not start knowledge extraction from a URL until the source acquisition hand-off gate in `references/source-acquisition.md` passes.
 
 ### Phase 1: Knowledge Points First
 
